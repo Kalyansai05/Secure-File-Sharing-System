@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Share Access Error</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container" style="margin-top: 80px;">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title">❌ Access Denied</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="alert alert-danger">
+                        <strong>Error:</strong>
+                        <p th:text="${error}"></p>
+                    </div>
+
+                    <p><strong>Possible reasons:</strong></p>
+                    <ul>
+                        <li>The share link has expired</li>
+                        <li>The share has been revoked by the owner</li>
+                        <li>Download limit reached</li>
+                        <li>You are not the intended recipient</li>
+                        <li>Invalid or corrupted JWT token</li>
+                    </ul>
+
+                    <hr>
+
+                    <p class="text-center">
+                        <a th:href="@{/login}" class="btn btn-primary">
+                            <span class="glyphicon glyphicon-log-in"></span> Login
+                        </a>
+                        <a th:href="@{/dashboard}" class="btn btn-default">
+                            <span class="glyphicon glyphicon-home"></span> Dashboard
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

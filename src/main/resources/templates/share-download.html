@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Secure File Download</title>
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container" style="margin-top: 80px;">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <h2>Secure File Download</h2>
+
+      <div class="alert alert-info">
+        <p>
+          You are about to download:
+          <strong th:text="${fileName}">filename.ext</strong>
+        </p>
+        <p th:if="${expiresAt}">
+          Expires at: <span th:text="${expiresAt}"></span>
+        </p>
+        <p th:if="${maxDownloads}">
+          Downloads: <span th:text="${currentDownloads}"></span> /
+          <span th:text="${maxDownloads}"></span>
+        </p>
+      </div>
+
+      <div class="alert alert-warning">
+        <strong>Security Check:</strong>
+        You must log in and enter your password again to decrypt this file.
+      </div>
+
+      <form th:action="@{/share/download}" method="post">
+        <input type="hidden" name="token" th:value="${token}"/>
+
+        <div class="form-group">
+          <label for="password">Confirm your password</label>
+          <input id="password" name="password" type="password"
+                 class="form-control" required/>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          Decrypt &amp; Download
+        </button>
+      </form>
+
+      <hr/>
+      <p>
+        If you have trouble, contact the sender to verify the share link.
+      </p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

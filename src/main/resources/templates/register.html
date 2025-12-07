@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f5f6fa; }
+        .navbar { background-color: cadetblue !important; }
+        .auth-container {
+            max-width: 500px; /* Increased width to accommodate camera view */
+            margin: 100px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        .btn-custom { background-color: cadetblue; color: white; }
+        .btn-custom:hover { background-color: #4f9a9a; color: white; }
+
+        /* Styles for Camera/Enrollment Section */
+        #video-container {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            background-color: #000;
+        }
+        video { width: 100%; display: block; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+        <h3 class="text-white">Two Step Verification Module</h3>
+    </div>
+</nav>
+
+<div class="auth-container">
+    <h3 class="text-center mb-4">Register</h3>
+
+    <div th:if="${param.success}">
+        <div class="alert alert-success text-center">You've successfully registered!</div>
+    </div>
+
+    <form th:action="@{/registration}" method="post" th:object="${user}" id="registrationForm">
+
+        <div class="mb-3">
+            <label class="form-label" for="name">Full Name</label>
+            <input id="name" class="form-control" th:field="*{name}" required autofocus="autofocus" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="email">Email</label>
+            <input id="email" class="form-control" th:field="*{email_id}" type="email" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="password">Password</label>
+            <input id="password" class="form-control" type="password" th:field="*{password}" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="mobileNumber">Mobile Number</label>
+            <input id="mobileNumber" class="form-control" th:field="*{mobileNumber}"
+                   type="text" pattern="[0-9]{10}" title="10-digit number" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="dateOfBirth">Date of Birth</label>
+            <input id="dateOfBirth" class="form-control" th:field="*{dateOfBirth}" type="date" required />
+        </div>
+
+        <hr/>
+
+        <h4 class="text-center mb-3">Face Enrollment (Required)</h4>
+        <div id="video-container" class="mb-3">
+            <video id="video" autoplay playsinline style="display: none;"></video>
+        </div>
+        <canvas id="snapshot" style="display:none;"></canvas>
+
+        <div class="text-center mb-3">
+            <button type="button" id="startCaptureBtn" class="btn btn-primary">Start Camera & Capture</button>
+            <div id="enrollmentStatus" class="mt-2 text-muted small">Capture your face template for enrollment.</div>
+        </div>
+
+        <input type="hidden" th:field="*{faceTemplateBase64}" id="faceTemplate" required/>
+
+        <button type="submit" id="registerBtn" class="btn btn-custom w-100" disabled>Finalize Registration</button>
+
+        <div class="text-center mt-3">
+            <span>Already registered? <a th:href="@{/login}">Login here</a></span>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    const video = document.getElementById('video');
+    const snapshot = document.getElementById('snapshot');
+    const startCaptureBtn = document.getElementById('startCaptureBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const enrollmentStatus = document.getElementById('enrollmentStatus');
+    const faceTemplate = document.getElementById('faceTemplate');
+    const registrationForm = document.getElementById('registrationForm');
+
+    let stream = null;
+    let isCaptured = false;
+
+    // 1. Handle Camera Start
+    startCaptureBtn.onclick = async () => {
+        if (!stream) {
+            try {
+                // Get user media (video only)
+                stream = await navigator.mediaDevices.getUserMedia({video: true, audio: false});
+                video.srcObject = stream;
+                video.style.display = 'block';
+                startCaptureBtn.innerText = "Capture New Face";
+                enrollmentStatus.innerHTML = "<span class='text-primary'>Camera is ON. Please look at the camera.</span>";
+                registerBtn.disabled = true;
+
+                // Wait for video load before capturing
+                video.onloadedmetadata = () => {
+                    setTimeout(captureFace, 500);
+                };
+                if (video.readyState >= 2) {
+                    captureFace();
+                }
+
+            } catch (e) {
+                enrollmentStatus.innerHTML = "<span class='text-danger'>Error: Camera access denied or not available.</span>";
+                startCaptureBtn.disabled = true;
+                registerBtn.disabled = true;
+            }
+        } else {
+            captureFace(); // Recapture on subsequent clicks
+        }
+    };
+
+    // 2. Handle Face Capture and Data Assignment
+    const captureFace = () => {
+        if (!stream) return;
+
+        snapshot.width = video.videoWidth;
+        snapshot.height = video.videoHeight;
+        const ctx = snapshot.getContext('2d');
+        ctx.drawImage(video, 0, 0, snapshot.width, snapshot.height);
+
+        // Get Base64 dataURL
+        const dataUrl = snapshot.toDataURL('image/jpeg', 0.9);
+
+        // Assign Base64 data to the hidden form field
+        faceTemplate.value = dataUrl;
+        isCaptured = true;
+
+        enrollmentStatus.innerHTML = "<span class='text-success'>Face Template Captured Successfully.</span>";
+        registerBtn.disabled = false;
+
+        // Stop the stream after a brief moment to turn off the camera light
+        setTimeout(() => {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+            video.style.display = 'none';
+        }, 1000);
+    };
+
+    // 3. Prevent form submission if face capture hasn't happened
+    registrationForm.onsubmit = (e) => {
+        if (!isCaptured || !faceTemplate.value) {
+            e.preventDefault();
+            enrollmentStatus.innerHTML = "<span class='text-danger'>Error: You must capture your face template before registering.</span>";
+            registerBtn.disabled = false; // Re-enable for retry
+        }
+        // If successful, the server side handles the final status
+        // and registration will proceed.
+    };
+
+</script>
+</body>
+</html>

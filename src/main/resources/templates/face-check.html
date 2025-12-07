@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Face Check</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+        /* keep UI centered and simple */
+        body { display:flex; align-items:center; justify-content:center; height:90vh; }
+        .card { width: 420px; padding: 20px; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+        video, canvas { width: 100%; border-radius: 4px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h3>Face verification</h3>
+    <p>Please take a live selfie to verify your identity</p>
+
+    <video id="video" autoplay playsinline></video>
+    <canvas id="snapshot" style="display:none;"></canvas>
+
+    <div style="margin-top:10px;">
+        <button id="captureBtn" class="btn btn-primary">Capture & Verify</button>
+        <button id="retryBtn" class="btn btn-default" style="display:none;">Retry</button>
+        <div id="status" style="margin-top:10px;"></div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    (async function() {
+      const video = document.getElementById('video');
+      const snapshot = document.getElementById('snapshot');
+      const captureBtn = document.getElementById('captureBtn');
+      const retryBtn = document.getElementById('retryBtn');
+      const status = document.getElementById('status');
+
+      // start camera
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: false});
+        video.srcObject = stream;
+      } catch (e) {
+        status.innerText = "Camera access denied or not available: " + e.message;
+        captureBtn.disabled = true;
+        return;
+      }
+
+      captureBtn.onclick = async () => {
+        status.innerText = "Capturing...";
+        snapshot.width = video.videoWidth;
+        snapshot.height = video.videoHeight;
+        const ctx = snapshot.getContext('2d');
+        ctx.drawImage(video, 0, 0, snapshot.width, snapshot.height);
+        const dataUrl = snapshot.toDataURL('image/jpeg', 0.9);
+
+        status.innerText = "Sending for verification...";
+        captureBtn.disabled = true;
+
+        try {
+          const res = await fetch('/api/face-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image_base64: dataUrl })
+          });
+          const json = await res.json();
+          if (res.ok && json.status === 'success') {
+            status.innerText = 'Face verified — redirecting to dashboard...';
+            window.location.href = '/dashboard';
+          } else {
+            status.innerText = 'Verification failed: ' + (json.reason || json.message || 'no match');
+            retryBtn.style.display = 'inline-block';
+          }
+        } catch (err) {
+          status.innerText = 'Error: ' + err.message;
+          retryBtn.style.display = 'inline-block';
+        } finally {
+          captureBtn.disabled = false;
+        }
+      };
+
+      retryBtn.onclick = () => {
+        status.innerText = '';
+        retryBtn.style.display = 'none';
+      };
+    })();
+</script>
+</body>
+</html>

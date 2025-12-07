@@ -1,0 +1,41 @@
+# Compiled class files
+*.class
+target/
+*.jar
+*.war
+*.ear
+
+# Log files
+*.log
+logs/
+
+# IntelliJ IDEA files
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Application properties (sensitive data)
+src/main/resources/application.properties
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Python face recognition
+face-recognition-service/__pycache__/
+face-recognition-service/*.pyc
+face-recognition-service/venv/
+face-recognition-service/.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~

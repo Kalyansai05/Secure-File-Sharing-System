@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Dashboard - Secure File Sharing</title>
+    <!-- Bootstrap 3 (matches your other pages) -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+        .navbar { background-color: cadetblue; }
+        .anchor { margin: 6px; background-color: #d9edf7; border-color: #d9edf7; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <h1>Secure File Sharing Dashboard</h1>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h4> Hi, Welcome <span th:text="${userDetails}"></span> </h4>
+                    </div>
+                    <div class="col-md-3">
+                        <a th:href="@{/logout}" class="btn anchor" style="margin-left:500px">
+                            <i class="glyphicon glyphicon-log-out"></i>&nbsp;Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<br><br><br><br><br><br><br>
+
+<div class="container">
+
+    <!-- Upload status alerts -->
+    <div th:if="${param.upload != null and param.upload[0] == 'success'}"
+         class="alert alert-success" role="alert">
+        <strong>? Success!</strong> File encrypted and uploaded successfully!
+    </div>
+
+    <div th:if="${param.upload != null and param.upload[0] == 'error'}"
+         class="alert alert-danger" role="alert">
+        <strong>? Error!</strong> Upload failed. Please try again.
+    </div>
+
+    <!-- Decrypt status placeholder (you can wire this later) -->
+    <div th:if="${param.decrypt != null}"
+         class="alert alert-success" role="alert">
+        <strong>? Success!</strong> File decrypted and downloaded!
+    </div>
+
+    <!-- Share status alerts -->
+    <div th:if="${param.share != null and param.share[0] == 'success'}"
+         class="alert alert-success" role="alert">
+        <strong>? Share created!</strong> Recipient will receive an email with a secure link.
+    </div>
+
+    <div th:if="${param.share != null and param.share[0] == 'error'}"
+         class="alert alert-danger" role="alert">
+        <strong>? Share failed.</strong> Please check logs and try again.
+    </div>
+
+    <!-- Upload panel -->
+    <div class="row">
+        <div class="col-md-12">
+            <h2>? Secure File Upload</h2>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <strong>Encryption Details</strong>
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        <li>Files encrypted with <strong>AES-256-GCM</strong></li>
+                        <li>Keys wrapped with <strong>RSA-2048</strong> OAEP</li>
+                        <li>Server cannot decrypt your files</li>
+                        <li>End-to-end encryption enabled</li>
+                    </ul>
+                </div>
+            </div>
+
+            <form th:action="@{/files/upload}" method="post"
+                  enctype="multipart/form-data" class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Select File:</label>
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control" name="file" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <span class="glyphicon glyphicon-lock"></span> Encrypt &amp; Upload
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <hr/>
+
+    <!-- Your encrypted files list + Share button -->
+    <div class="row">
+        <div class="col-md-12">
+            <h2>? Your Encrypted Files</h2>
+
+            <div th:if="${#lists.isEmpty(files)}" class="alert alert-info">
+                You have not uploaded any files yet.
+            </div>
+
+            <table th:if="${!#lists.isEmpty(files)}"
+                   class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Original Name</th>
+                    <th>Size (bytes)</th>
+                    <th>Uploaded At</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="file, stat : ${files}">
+                    <td th:text="${stat.index + 1}">1</td>
+                    <td th:text="${file.originalFilename}">name.ext</td>
+                    <td th:text="${file.fileSize}">1234</td>
+                    <td th:text="${file.uploadedAt}">2025-12-02T10:00</td>
+                    <td>
+                        <!-- Future download button (when you implement owner download) -->
+                        <!--
+                        <a th:href="@{'/files/download/' + ${file.id}}"
+                           class="btn btn-xs btn-success">
+                            <span class="glyphicon glyphicon-download"></span> Download
+                        </a>
+                        -->
+
+                        <!-- Share button: opens modal and passes file info -->
+                        <button type="button"
+                                class="btn btn-xs btn-info"
+                                data-toggle="modal"
+                                data-target="#shareModal"
+                                th:attr="data-file-id=${file.id},
+                                         data-file-name=${file.originalFilename}">
+                            <span class="glyphicon glyphicon-share"></span> Share
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div> <!-- /container -->
+
+<!-- Share Modal -->
+<div class="modal fade" id="shareModal" tabindex="-1" role="dialog"
+     aria-labelledby="shareModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form th:action="@{/files/share}" method="post">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="shareModalLabel">Share Encrypted File</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        File:
+                        <strong id="shareFileName">file.ext</strong>
+                    </p>
+
+                    <!-- Hidden fileId goes to backend -->
+                    <input type="hidden" name="fileId" id="shareFileId"/>
+
+                    <div class="form-group">
+                        <label for="recipientEmail">Recipient Email</label>
+                        <input type="email" class="form-control" name="recipientEmail"
+                               id="recipientEmail" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ownerPassword">Confirm Your Password</label>
+                        <input type="password" class="form-control" name="ownerPassword"
+                               id="ownerPassword" required/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maxDownloads">Max Downloads (optional)</label>
+                        <input type="number" class="form-control" name="maxDownloads"
+                               id="maxDownloads" min="1" placeholder="e.g. 3"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expiresAt">Expires At (optional)</label>
+                        <input type="datetime-local" class="form-control" name="expiresAt"
+                               id="expiresAt"/>
+                    </div>
+
+                    <p class="text-muted small">
+                        Recipient must log in and pass OTP &amp; face verification before download.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        Send Share Link
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery + Bootstrap JS (required for modal) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script>
+    // When the Share modal opens, copy fileId and fileName from clicked button
+    $('#shareModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var fileId = button.data('file-id');
+        var fileName = button.data('file-name');
+
+        var modal = $(this);
+        modal.find('#shareFileId').val(fileId);
+        modal.find('#shareFileName').text(fileName);
+    });
+</script>
+
+</body>
+</html>
