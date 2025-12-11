@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure File Sharing - Enterprise-Grade Encrypted File Transfer</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Google Fonts - Roboto -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    :root {
+        --primary: #1976D2;
+        --primary-dark: #1565C0;
+        --primary-light: #42A5F5;
+        --accent: #00897B;
+        --surface: #FFFFFF;
+        --background: #F5F5F5;
+        --text-primary: #212121;
+        --text-secondary: #757575;
+        --shadow-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        --shadow-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    }
+
+    * {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+        background-color: var(--background);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Header */
+    .navbar {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        box-shadow: var(--shadow-2);
+        padding: 16px 0;
+    }
+
+    .navbar-brand {
+        font-weight: 500;
+        font-size: 22px;
+        color: white !important;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .navbar-brand .material-icons {
+        font-size: 32px;
+    }
+
+    .nav-link {
+        color: rgba(255,255,255,0.9) !important;
+        font-weight: 500;
+        padding: 8px 16px !important;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .nav-link:hover {
+        background: rgba(255,255,255,0.1);
+        color: white !important;
+    }
+
+    .nav-link.active {
+        background: rgba(255,255,255,0.2);
+        color: white !important;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 80px 0 60px;
+        text-align: center;
+    }
+
+    .hero-section h1 {
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .hero-section p {
+        font-size: 20px;
+        margin-bottom: 40px;
+        color: rgba(255,255,255,0.9);
+    }
+
+    .btn-material {
+        background: white;
+        color: var(--primary);
+        border: none;
+        border-radius: 8px;
+        padding: 14px 32px;
+        font-weight: 500;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-2);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-material:hover {
+        background: #F5F5F5;
+        box-shadow: var(--shadow-3);
+        transform: translateY(-2px);
+        color: var(--primary);
+    }
+
+    .btn-outline-white {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+
+    .btn-outline-white:hover {
+        background: white;
+        color: var(--primary);
+    }
+
+    /* Main Content */
+    .main-content {
+        flex: 1;
+        padding: 60px 0;
+    }
+
+    /* Features Section */
+    .feature-card {
+        background: white;
+        border-radius: 12px;
+        padding: 32px;
+        text-align: center;
+        box-shadow: var(--shadow-2);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .feature-card:hover {
+        box-shadow: var(--shadow-3);
+        transform: translateY(-5px);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+
+    .feature-icon .material-icons {
+        font-size: 40px;
+        color: white;
+    }
+
+    .feature-card h3 {
+        font-size: 20px;
+        font-weight: 500;
+        margin-bottom: 12px;
+        color: var(--text-primary);
+    }
+
+    .feature-card p {
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    /* Security Stats */
+    .stats-section {
+        background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+        padding: 60px 0;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .stat-number {
+        font-size: 48px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 8px;
+    }
+
+    .stat-label {
+        font-size: 16px;
+        color: var(--text-secondary);
+    }
+
+    /* How It Works */
+    .steps-section {
+        padding: 60px 0;
+    }
+
+    .step-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: var(--shadow-2);
+        position: relative;
+        margin-bottom: 24px;
+    }
+
+    .step-number {
+        position: absolute;
+        top: -15px;
+        left: 24px;
+        width: 40px;
+        height: 40px;
+        background: var(--primary);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 18px;
+    }
+
+    .step-card h4 {
+        margin-top: 20px;
+        margin-bottom: 12px;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    /* Footer */
+    .footer {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, #0D47A1 100%);
+        color: white;
+        padding: 40px 0 20px;
+        margin-top: auto;
+    }
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        flex-wrap: wrap;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .footer-section h5 {
+        font-weight: 500;
+        margin-bottom: 16px;
+        font-size: 16px;
+    }
+
+    .footer-section ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 8px;
+    }
+
+    .footer-link {
+        color: rgba(255,255,255,0.8);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .footer-link:hover {
+        color: white;
+        padding-left: 5px;
+    }
+
+    .footer-bottom {
+        border-top: 1px solid rgba(255,255,255,0.2);
+        padding-top: 20px;
+        text-align: center;
+    }
+
+    .footer-bottom p {
+        margin: 0;
+        font-size: 14px;
+        color: rgba(255,255,255,0.8);
+    }
+  </style>
+</head>
+<body>
+<!-- Header Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" th:href="@{/}">
+      <span class="material-icons">cloud_circle</span>
+      Secure File Sharing
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" th:href="@{/}">
+            <span class="material-icons" style="font-size: 18px;">home</span>
+            Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/registration}">
+            <span class="material-icons" style="font-size: 18px;">person_add</span>
+            Register
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/login}">
+            <span class="material-icons" style="font-size: 18px;">login</span>
+            Sign In
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <h1>
+      <span class="material-icons" style="font-size: 60px; vertical-align: middle;">shield</span>
+      Secure File Sharing
+    </h1>
+    <p>Enterprise-Grade Encrypted File Transfer with Three-Factor Authentication</p>
+    <div class="d-flex gap-3 justify-content-center">
+      <a th:href="@{/registration}" class="btn btn-material">
+        <span class="material-icons">person_add</span>
+        Get Started
+      </a>
+      <a th:href="@{/login}" class="btn btn-material btn-outline-white">
+        <span class="material-icons">login</span>
+        Sign In
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Main Content -->
+<div class="main-content">
+  <!-- Features Section -->
+  <section class="container mb-5">
+    <div class="text-center mb-5">
+      <h2 style="font-weight: 500; color: var(--text-primary); margin-bottom: 16px;">Why Choose Our Platform?</h2>
+      <p style="color: var(--text-secondary); font-size: 18px;">Bank-level security meets user-friendly design</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <span class="material-icons">enhanced_encryption</span>
+          </div>
+          <h3>End-to-End Encryption</h3>
+          <p>Files encrypted with AES-256-GCM. Keys wrapped with RSA-2048 OAEP. Zero-knowledge architecture ensures even we cannot access your files.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <span class="material-icons">verified_user</span>
+          </div>
+          <h3>Three-Factor Authentication</h3>
+          <p>Password + OTP + Facial Recognition. Multi-layered security ensures only authorized users can access shared files.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <span class="material-icons">share</span>
+          </div>
+          <h3>Secure Sharing</h3>
+          <p>Share files with expiration dates, download limits, and recipient verification. Full audit trail of all access attempts.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <span class="material-icons">lock_clock</span>
+          </div>
+          <h3>Time-Limited Access</h3>
+          <p>Set expiration dates and maximum download counts. Files automatically revoked after expiry.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <span class="material-icons">email</span>
+          </div>
+          <h3>Email Notifications</h3>
+          <p>Automated email alerts for OTP, share links, and security events. Stay informed about all file activities.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <span class="material-icons">face_retouching_natural</span>
+          </div>
+          <h3>Biometric Security</h3>
+          <p>Facial recognition adds an extra layer of protection. Your face template is encrypted and stored securely.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security Stats -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="stat-item">
+            <div class="stat-number">256</div>
+            <div class="stat-label">Bit AES Encryption</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-item">
+            <div class="stat-number">2048</div>
+            <div class="stat-label">Bit RSA Key</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-item">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Factor Authentication</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-item">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Secure Transfer</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="steps-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 style="font-weight: 500; color: var(--text-primary); margin-bottom: 16px;">How It Works</h2>
+        <p style="color: var(--text-secondary); font-size: 18px;">Simple steps to secure file sharing</p>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h4>
+              <span class="material-icons align-middle" style="color: var(--primary);">person_add</span>
+              Register Account
+            </h4>
+            <p style="color: var(--text-secondary);">Create your account with email, password, mobile number, and facial recognition enrollment.</p>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h4>
+              <span class="material-icons align-middle" style="color: var(--primary);">login</span>
+              Secure Login
+            </h4>
+            <p style="color: var(--text-secondary);">Sign in with email and password, verify OTP sent to your email, and complete facial recognition.</p>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h4>
+              <span class="material-icons align-middle" style="color: var(--primary);">cloud_upload</span>
+              Upload Files
+            </h4>
+            <p style="color: var(--text-secondary);">Upload files which are automatically encrypted with AES-256-GCM before storage.</p>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="step-card">
+            <div class="step-number">4</div>
+            <h4>
+              <span class="material-icons align-middle" style="color: var(--primary);">share</span>
+              Share Securely
+            </h4>
+            <p style="color: var(--text-secondary);">Share files with recipients via secure links, set expiration dates, and download limits.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h5>
+          <span class="material-icons align-middle" style="font-size: 20px;">cloud_circle</span>
+          Secure File Sharing
+        </h5>
+        <p style="color: rgba(255,255,255,0.7); font-size: 14px; max-width: 300px;">
+          Enterprise-grade file sharing with three-factor authentication and end-to-end encryption.
+        </p>
+      </div>
+
+      <div class="footer-section">
+        <h5>Quick Links</h5>
+        <ul>
+          <li><a th:href="@{/}" class="footer-link">Home</a></li>
+          <li><a th:href="@{/registration}" class="footer-link">Register</a></li>
+          <li><a th:href="@{/login}" class="footer-link">Sign In</a></li>
+          <li><a href="#" class="footer-link">Features</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h5>Support</h5>
+        <ul>
+          <li><a href="#" class="footer-link">Help Center</a></li>
+          <li><a href="#" class="footer-link">Privacy Policy</a></li>
+          <li><a href="#" class="footer-link">Terms of Service</a></li>
+          <li><a href="#" class="footer-link">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h5>Security Features</h5>
+        <ul>
+          <li class="footer-link">🔐 AES-256-GCM Encryption</li>
+          <li class="footer-link">🔑 RSA-2048 Key Wrapping</li>
+          <li class="footer-link">👤 3-Factor Authentication</li>
+          <li class="footer-link">🔒 Zero-Knowledge Architecture</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>
+        <span class="material-icons align-middle" style="font-size: 16px;">lock</span>
+        &copy; 2025 Secure File Sharing. All rights reserved. | AES-256-GCM + RSA-2048 Encrypted
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

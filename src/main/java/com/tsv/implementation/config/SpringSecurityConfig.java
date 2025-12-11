@@ -54,11 +54,21 @@ public class SpringSecurityConfig {
                 .addFilterAfter(filter, SecurityContextPersistenceFilter.class)
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ FIXED: Added /otp-verify and /verify-otp
+                        // ✅ NEW: Allow public access to home page
+                        .requestMatchers("/", "/home").permitAll()
+
+                        // ✅ PRESERVED: All existing public routes
                         .requestMatchers("/registration/**", "/login/**", "/login/otpVerification",
                                 "/otp-verify", "/verify-otp",
                                 "/share/download").permitAll()
+
+                        // ✅ PRESERVED: Face verification requires authentication
                         .requestMatchers("/face-check", "/api/face-verify").authenticated()
+
+                        // ✅ NEW: Allow static resources (CSS, JS, Images)
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+
+                        // ✅ PRESERVED: All other requests require authentication
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

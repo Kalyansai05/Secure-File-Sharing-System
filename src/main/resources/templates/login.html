@@ -2,70 +2,325 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Two Step Verification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Secure File Sharing</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <style>
+        :root {
+            --primary: #1976D2;
+            --primary-dark: #1565C0;
+            --surface: #FFFFFF;
+            --background: #F5F5F5;
+            --text-primary: #212121;
+            --error: #E53935;
+            --shadow-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+        }
+
+        * {
+            font-family: 'Roboto', sans-serif;
+        }
+
         body {
-            background-color: #f5f6fa; /* same background for all pages */
+            background: linear-gradient(135deg, #42A5F5 0%, #1976D2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
+
+        /* Header */
         .navbar {
-            background-color: cadetblue !important;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #0D47A1 100%);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+            padding: 16px 0;
         }
-        .auth-container {
-            max-width: 400px;
-            margin: 100px auto;
-            background: #fff;
+
+        .navbar-brand {
+            font-weight: 500;
+            font-size: 22px;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand .material-icons {
+            font-size: 32px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            padding: 8px 16px !important;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white !important;
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .login-container {
+            max-width: 440px;
+            width: 100%;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--shadow-3);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--surface);
+            padding: 40px 40px 24px;
+            text-align: center;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary) 0%, #1565C0 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .logo-icon .material-icons {
+            color: white;
+            font-size: 36px;
+        }
+
+        .card-header h3 {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .card-body {
+            padding: 32px 40px 40px;
+            background: var(--surface);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-control {
+            border: 1px solid #BDBDBD;
             border-radius: 8px;
-            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-            padding: 30px;
+            padding: 14px 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
         }
-        .btn-custom {
-            background-color: cadetblue;
-            color: white;
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+            outline: none;
         }
-        .btn-custom:hover {
-            background-color: #4f9a9a;
+
+        .btn-material {
+            background: var(--primary);
             color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 24px;
+            font-weight: 500;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        }
+
+        .btn-material:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+            transform: translateY(-2px);
+        }
+
+        .alert-material {
+            border: none;
+            border-radius: 8px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: start;
+            gap: 12px;
+        }
+
+        .text-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .text-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #0D47A1 100%);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .footer p {
+            margin: 0;
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
         }
     </style>
 </head>
 <body>
-
-<!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+<!-- Header Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <h3 class="text-white">Two Step Verification Module</h3>
+        <a class="navbar-brand" th:href="@{/}">
+            <span class="material-icons">cloud_circle</span>
+            Secure File Sharing
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">
+                        <span class="material-icons" style="font-size: 18px;">home</span>
+                        Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/registration}">
+                        <span class="material-icons" style="font-size: 18px;">person_add</span>
+                        Register
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/login}">
+                        <span class="material-icons" style="font-size: 18px;">login</span>
+                        Sign In
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
 
-<!-- Login Form -->
-<div class="auth-container">
-    <h3 class="text-center mb-4">Login</h3>
+<!-- Main Content -->
+<div class="main-content">
+    <div class="login-container">
+        <div class="card">
+            <div class="card-header">
+                <div class="logo-icon">
+                    <span class="material-icons">lock</span>
+                </div>
+                <h3>Sign In</h3>
+            </div>
 
-    <!-- Error Message -->
-    <div th:if="${param.error}">
-        <div class="alert alert-danger text-center">Either password or EmailId entered is incorrect!</div>
+            <div class="card-body">
+                <!-- Error Alert -->
+                <div th:if="${param.error}" class="alert alert-danger alert-material mb-4">
+                    <span class="material-icons">error</span>
+                    <div>
+                        <strong>Authentication Failed</strong>
+                        <p class="mb-0">Invalid email or password. Please try again.</p>
+                    </div>
+                </div>
+
+                <!-- Success Alert -->
+                <div th:if="${param.registered}" class="alert alert-success alert-material mb-4">
+                    <span class="material-icons">check_circle</span>
+                    <div>
+                        <strong>Registration Complete!</strong>
+                        <p class="mb-0">You can now sign in with your credentials.</p>
+                    </div>
+                </div>
+
+                <!-- ✅ PRESERVED: Form action /login with th:object -->
+                <form th:action="@{/login}" method="post" th:object="${user}">
+
+                    <!-- Email -->
+                    <div class="mb-4">
+                        <label class="form-label" for="email">Email Address</label>
+                        <!-- ✅ PRESERVED: th:field="*{username}" -->
+                        <input id="email"
+                               class="form-control"
+                               th:field="*{username}"
+                               required
+                               autofocus
+                               placeholder="your.email@example.com">
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-4">
+                        <label class="form-label" for="password">Password</label>
+                        <!-- ✅ PRESERVED: th:field="*{password}" -->
+                        <input id="password"
+                               class="form-control"
+                               type="password"
+                               th:field="*{password}"
+                               required
+                               placeholder="Enter your password">
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-material w-100 mb-3">
+                        <span class="material-icons align-middle" style="font-size: 20px;">login</span>
+                        Sign In
+                    </button>
+
+                    <div class="text-center">
+                        <span class="text-muted">New user?</span>
+                        <a th:href="@{/registration}" class="text-link">Create Account</a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <form th:action="@{/login}" method="post" th:object="${user}">
-        <div class="mb-3">
-            <label class="form-label" for="email">Email</label>
-            <input id="email" class="form-control" th:field="*{username}" required autofocus="autofocus"/>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label" for="password">Password</label>
-            <input id="password" class="form-control" type="password" th:field="*{password}" required/>
-        </div>
-
-        <button type="submit" class="btn btn-custom w-100">Log In</button>
-
-        <div class="text-center mt-3">
-            <span>New User? <a th:href="@{/registration}">Register here</a></span>
-        </div>
-    </form>
 </div>
 
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p>
+            <span class="material-icons align-middle" style="font-size: 16px;">lock</span>
+            &copy; 2025 Secure File Sharing. All rights reserved. | AES-256-GCM + RSA-2048 Encrypted
+        </p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

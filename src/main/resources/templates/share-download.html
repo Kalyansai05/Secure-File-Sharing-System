@@ -2,55 +2,476 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Secure File Download</title>
-  <link rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure File Download - Secure File Sharing</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    :root {
+        --primary: #1976D2;
+        --primary-dark: #1565C0;
+        --surface: #FFFFFF;
+        --background: #F5F5F5;
+        --text-primary: #212121;
+        --text-secondary: #757575;
+        --success: #43A047;
+        --warning: #FB8C00;
+        --shadow-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    }
+
+    * {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #42A5F5 0%, #1976D2 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Header */
+    .navbar {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, #0D47A1 100%);
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+        padding: 16px 0;
+    }
+
+    .navbar-brand {
+        font-weight: 500;
+        font-size: 22px;
+        color: white !important;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .navbar-brand .material-icons {
+        font-size: 32px;
+    }
+
+    .nav-link {
+        color: rgba(255,255,255,0.9) !important;
+        font-weight: 500;
+        padding: 8px 16px !important;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .nav-link:hover {
+        background: rgba(255,255,255,0.1);
+        color: white !important;
+    }
+
+    /* Main Content */
+    .main-content {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    .download-container {
+        max-width: 600px;
+        width: 100%;
+    }
+
+    .card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: var(--shadow-3);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: var(--surface);
+        padding: 32px;
+        text-align: center;
+        border-bottom: 1px solid #E0E0E0;
+    }
+
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--primary) 0%, #1565C0 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+    }
+
+    .icon-circle .material-icons {
+        color: white;
+        font-size: 48px;
+    }
+
+    .card-header h3 {
+        font-weight: 500;
+        color: var(--text-primary);
+        margin: 0 0 8px;
+    }
+
+    .card-body {
+        padding: 32px;
+        background: var(--surface);
+    }
+
+    .alert-material {
+        border: none;
+        border-radius: 12px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: start;
+        gap: 12px;
+    }
+
+    .alert-material .material-icons {
+        font-size: 24px;
+    }
+
+    .file-info {
+        background: #F5F5F5;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+
+    .file-info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .file-info-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .file-info-label {
+        color: var(--text-secondary);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .file-info-value {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-control {
+        border: 1px solid #BDBDBD;
+        border-radius: 8px;
+        padding: 14px 16px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        outline: none;
+    }
+
+    .btn-material {
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 14px 24px;
+        font-weight: 500;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-material:hover {
+        background: var(--primary-dark);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.19);
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+    }
+
+    .btn-outline:hover {
+        background: var(--primary);
+        color: white;
+    }
+
+    /* Navigation Buttons Section */
+    .navigation-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 2px solid #E0E0E0;
+    }
+
+    .navigation-buttons .btn-material {
+        flex: 1;
+        justify-content: center;
+    }
+
+    /* Footer */
+    .footer {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, #0D47A1 100%);
+        color: white;
+        padding: 40px 0 20px;
+    }
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .footer-section h5 {
+        font-weight: 500;
+        margin-bottom: 16px;
+        font-size: 16px;
+    }
+
+    .footer-section ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 8px;
+    }
+
+    .footer-link {
+        color: rgba(255,255,255,0.8);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .footer-link:hover {
+        color: white;
+        padding-left: 5px;
+    }
+
+    .footer-bottom {
+        border-top: 1px solid rgba(255,255,255,0.2);
+        padding-top: 20px;
+        text-align: center;
+    }
+
+    .footer-bottom p {
+        margin: 0;
+        font-size: 14px;
+        color: rgba(255,255,255,0.8);
+    }
+  </style>
 </head>
 <body>
-<div class="container" style="margin-top: 80px;">
-  <div class="row">
-    <div class="col-md-6 col-md-offset-3">
-      <h2>Secure File Download</h2>
+<!-- ✅ Header Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" th:href="@{/}">
+      <span class="material-icons">cloud_circle</span>
+      Secure File Sharing
+    </a>
 
-      <div class="alert alert-info">
-        <p>
-          You are about to download:
-          <strong th:text="${fileName}">filename.ext</strong>
-        </p>
-        <p th:if="${expiresAt}">
-          Expires at: <span th:text="${expiresAt}"></span>
-        </p>
-        <p th:if="${maxDownloads}">
-          Downloads: <span th:text="${currentDownloads}"></span> /
-          <span th:text="${maxDownloads}"></span>
-        </p>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/}">
+            <span class="material-icons" style="font-size: 18px;">home</span>
+            Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/login}">
+            <span class="material-icons" style="font-size: 18px;">login</span>
+            Sign In
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="download-container">
+    <div class="card">
+      <div class="card-header">
+        <div class="icon-circle">
+          <span class="material-icons">download</span>
+        </div>
+        <h3>Secure File Download</h3>
+        <p class="text-muted mb-0">Encrypted file shared with you</p>
       </div>
 
-      <div class="alert alert-warning">
-        <strong>Security Check:</strong>
-        You must log in and enter your password again to decrypt this file.
-      </div>
+      <div class="card-body">
+        <!-- File Information -->
+        <div class="file-info">
+          <div class="file-info-row">
+                            <span class="file-info-label">
+                                <span class="material-icons" style="font-size: 18px;">description</span>
+                                File Name
+                            </span>
+            <span class="file-info-value" th:text="${fileName}">filename.pdf</span>
+          </div>
 
-      <form th:action="@{/share/download}" method="post">
-        <input type="hidden" name="token" th:value="${token}"/>
+          <div th:if="${expiresAt}" class="file-info-row">
+                            <span class="file-info-label">
+                                <span class="material-icons" style="font-size: 18px;">schedule</span>
+                                Expires At
+                            </span>
+            <span class="file-info-value" th:text="${#temporals.format(expiresAt, 'MMM dd, yyyy HH:mm')}">Dec 15, 2025 14:30</span>
+          </div>
 
-        <div class="form-group">
-          <label for="password">Confirm your password</label>
-          <input id="password" name="password" type="password"
-                 class="form-control" required/>
+          <div th:if="${maxDownloads}" class="file-info-row">
+                            <span class="file-info-label">
+                                <span class="material-icons" style="font-size: 18px;">download_for_offline</span>
+                                Downloads
+                            </span>
+            <span class="file-info-value">
+                                <span th:text="${currentDownloads}">0</span> / <span th:text="${maxDownloads}">3</span>
+                            </span>
+          </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">
-          Decrypt &amp; Download
-        </button>
-      </form>
+        <!-- Security Warning -->
+        <div class="alert alert-warning alert-material mb-4">
+          <span class="material-icons">shield</span>
+          <div>
+            <strong>Security Check Required</strong>
+            <p class="mb-0 small">You must log in and enter your password to decrypt this file.</p>
+          </div>
+        </div>
 
-      <hr/>
-      <p>
-        If you have trouble, contact the sender to verify the share link.
-      </p>
+        <!-- Download Form -->
+        <form th:action="@{/share/download}" method="post">
+          <input type="hidden" name="token" th:value="${token}">
+
+          <div class="mb-4">
+            <label for="password" class="form-label">
+              <span class="material-icons align-middle" style="font-size: 18px;">lock</span>
+              Confirm Your Password
+            </label>
+            <input id="password"
+                   name="password"
+                   type="password"
+                   class="form-control"
+                   required
+                   placeholder="Enter your password to decrypt">
+          </div>
+
+          <button type="submit" class="btn-material w-100">
+            <span class="material-icons">lock_open</span>
+            Decrypt & Download
+          </button>
+        </form>
+
+        <!-- ✅ NEW: Navigation Buttons (Like Error Page) -->
+        <div class="navigation-buttons">
+          <a th:href="@{/login}" class="btn-material btn-outline">
+            <span class="material-icons">login</span>
+            Go to Sign In
+          </a>
+          <a th:href="@{/dashboard}" class="btn-material">
+            <span class="material-icons">dashboard</span>
+            Go to Dashboard
+          </a>
+        </div>
+
+        <hr style="margin: 24px 0; border-color: #E0E0E0;">
+
+        <div class="text-center">
+          <small class="text-muted">
+            <span class="material-icons align-middle" style="font-size: 16px;">help_outline</span>
+            Need help? Contact the file owner or system administrator.
+          </small>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- ✅ Footer with Quick Links -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h5>Secure File Sharing</h5>
+        <p style="color: rgba(255,255,255,0.7); font-size: 14px; max-width: 300px;">
+          Enterprise-grade file sharing with three-factor authentication and end-to-end encryption.
+        </p>
+      </div>
+
+      <div class="footer-section">
+        <h5>Quick Links</h5>
+        <ul>
+          <li><a href="#" class="footer-link">About Us</a></li>
+          <li><a href="#" class="footer-link">Features</a></li>
+          <li><a href="#" class="footer-link">Security</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h5>Support</h5>
+        <ul>
+          <li><a href="#" class="footer-link">Help Center</a></li>
+          <li><a href="#" class="footer-link">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h5>Need Assistance?</h5>
+        <p style="color: rgba(255,255,255,0.8); font-size: 14px;">
+          <span class="material-icons align-middle" style="font-size: 16px;">email</span>
+          support@securefiles.com
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>
+        <span class="material-icons align-middle" style="font-size: 16px;">lock</span>
+        &copy; 2025 Secure File Sharing. All rights reserved. | AES-256-GCM + RSA-2048 Encrypted
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -2,97 +2,557 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>User Registration</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f5f6fa; }
-        .navbar { background-color: cadetblue !important; }
-        .auth-container {
-            max-width: 500px; /* Increased width to accommodate camera view */
-            margin: 100px auto;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-            padding: 30px;
-        }
-        .btn-custom { background-color: cadetblue; color: white; }
-        .btn-custom:hover { background-color: #4f9a9a; color: white; }
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Secure File Sharing</title>
 
-        /* Styles for Camera/Enrollment Section */
-        #video-container {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            overflow: hidden;
-            background-color: #000;
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts - Roboto -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1976D2;
+            --primary-dark: #1565C0;
+            --primary-light: #42A5F5;
+            --accent: #00897B;
+            --surface: #FFFFFF;
+            --background: #F5F5F5;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --error: #E53935;
+            --success: #43A047;
+            --shadow-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            --shadow-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
         }
-        video { width: 100%; display: block; }
+
+        * {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #0D47A1 100%);
+            box-shadow: var(--shadow-2);
+            padding: 16px 0;
+        }
+
+        .navbar-brand {
+            font-weight: 500;
+            font-size: 22px;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand .material-icons {
+            font-size: 32px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            padding: 8px 16px !important;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white !important;
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 40px 0;
+        }
+
+        .registration-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: var(--shadow-3);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--surface);
+            border-bottom: 1px solid #E0E0E0;
+            padding: 24px 32px;
+        }
+
+        .card-header h3 {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .card-body {
+            padding: 32px;
+            background: var(--surface);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-control {
+            border: 1px solid #BDBDBD;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+            outline: none;
+        }
+
+        .btn-material {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 24px;
+            font-weight: 500;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-2);
+        }
+
+        .btn-material:hover {
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-3);
+            transform: translateY(-2px);
+        }
+
+        .btn-material:disabled {
+            background: #BDBDBD;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn-outline-material {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-material:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .alert-material {
+            border: none;
+            border-radius: 8px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-material .material-icons {
+            font-size: 24px;
+        }
+
+        .video-container {
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-2);
+            margin-bottom: 16px;
+        }
+
+        #video {
+            width: 100%;
+            display: block;
+        }
+
+        .divider {
+            height: 1px;
+            background: #E0E0E0;
+            margin: 32px 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .section-header .material-icons {
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .section-header h4 {
+            margin: 0;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .text-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .text-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #0D47A1 100%);
+            color: white;
+            padding: 30px 0 20px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .footer-section h5 {
+            font-weight: 500;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 20px;
+            text-align: center;
+        }
+
+        .footer-bottom p {
+            margin: 0;
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+        }
     </style>
 </head>
 <body>
-
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+<!-- Header Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <h3 class="text-white">Two Step Verification Module</h3>
+        <a class="navbar-brand" href="#">
+            <span class="material-icons">cloud_circle</span>
+            Secure File Sharing
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">
+                        <span class="material-icons align-middle" style="font-size: 18px;">home</span>
+                        Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/registration}">
+                        <span class="material-icons align-middle" style="font-size: 18px;">person_add</span>
+                        Register
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/login}">
+                        <span class="material-icons align-middle" style="font-size: 18px;">login</span>
+                        Sign In
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </nav>
 
-<div class="auth-container">
-    <h3 class="text-center mb-4">Register</h3>
+<!-- Main Content -->
+<div class="main-content">
+    <div class="registration-container">
+        <!-- Success Alert -->
+        <div th:if="${param.success}" class="alert alert-success alert-material mb-4">
+            <span class="material-icons">check_circle</span>
+            <div>
+                <strong>Registration Successful!</strong>
+                <p class="mb-0">You can now sign in with your credentials.</p>
+            </div>
+        </div>
 
-    <div th:if="${param.success}">
-        <div class="alert alert-success text-center">You've successfully registered!</div>
+        <div class="card">
+            <div class="card-header">
+                <h3>Create Account</h3>
+            </div>
+
+            <div class="card-body">
+                <form th:action="@{/registration}" method="post" th:object="${user}" id="registrationForm">
+
+                    <!-- Full Name -->
+                    <div class="mb-4">
+                        <label class="form-label" for="name">
+                            <span class="material-icons align-middle" style="font-size: 18px;">person</span>
+                            Full Name
+                        </label>
+                        <input id="name"
+                               class="form-control"
+                               th:field="*{name}"
+                               required
+                               autofocus
+                               placeholder="Enter your full name">
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-4">
+                        <label class="form-label" for="email">
+                            <span class="material-icons align-middle" style="font-size: 18px;">email</span>
+                            Email Address
+                        </label>
+                        <input id="email"
+                               class="form-control"
+                               th:field="*{email_id}"
+                               type="email"
+                               required
+                               placeholder="your.email@example.com">
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-4">
+                        <label class="form-label" for="password">
+                            <span class="material-icons align-middle" style="font-size: 18px;">lock</span>
+                            Password
+                        </label>
+                        <input id="password"
+                               class="form-control"
+                               type="password"
+                               th:field="*{password}"
+                               required
+                               placeholder="Create a strong password">
+                    </div>
+
+                    <!-- Mobile Number -->
+                    <div class="mb-4">
+                        <label class="form-label" for="mobileNumber">
+                            <span class="material-icons align-middle" style="font-size: 18px;">phone</span>
+                            Mobile Number
+                        </label>
+                        <input id="mobileNumber"
+                               class="form-control"
+                               th:field="*{mobileNumber}"
+                               type="text"
+                               pattern="[0-9]{10}"
+                               title="10-digit number"
+                               required
+                               placeholder="10-digit mobile number">
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div class="mb-4">
+                        <label class="form-label" for="dateOfBirth">
+                            <span class="material-icons align-middle" style="font-size: 18px;">cake</span>
+                            Date of Birth
+                        </label>
+                        <input id="dateOfBirth"
+                               class="form-control"
+                               th:field="*{dateOfBirth}"
+                               type="date"
+                               required>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="divider"></div>
+
+                    <!-- Face Enrollment Section -->
+                    <div class="section-header">
+                        <span class="material-icons">face</span>
+                        <h4>Face Verification Setup</h4>
+                    </div>
+
+                    <div class="alert alert-info alert-material mb-4">
+                        <span class="material-icons">info</span>
+                        <small>Your face template is encrypted and used only for secure authentication.</small>
+                    </div>
+
+                    <div id="video-container" class="video-container" style="display: none;">
+                        <video id="video" autoplay playsinline></video>
+                    </div>
+                    <canvas id="snapshot" style="display:none;"></canvas>
+
+                    <div class="text-center mb-4">
+                        <button type="button" id="startCaptureBtn" class="btn btn-outline-material">
+                            <span class="material-icons align-middle">camera_alt</span>
+                            Start Camera
+                        </button>
+                    </div>
+
+                    <div id="enrollmentStatus" class="text-center text-muted mb-4">
+                        <small>Click "Start Camera" to capture your face template</small>
+                    </div>
+
+                    <!-- Hidden field for face template -->
+                    <input type="hidden" th:field="*{faceTemplateBase64}" id="faceTemplate" required>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="registerBtn" class="btn btn-material w-100" disabled>
+                        <span class="material-icons align-middle">check_circle</span>
+                        Create Account
+                    </button>
+
+                    <div class="text-center mt-4">
+                        <span class="text-muted">Already have an account?</span>
+                        <a th:href="@{/login}" class="text-link">Sign In</a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <form th:action="@{/registration}" method="post" th:object="${user}" id="registrationForm">
-
-        <div class="mb-3">
-            <label class="form-label" for="name">Full Name</label>
-            <input id="name" class="form-control" th:field="*{name}" required autofocus="autofocus" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label" for="email">Email</label>
-            <input id="email" class="form-control" th:field="*{email_id}" type="email" required />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label" for="password">Password</label>
-            <input id="password" class="form-control" type="password" th:field="*{password}" required />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label" for="mobileNumber">Mobile Number</label>
-            <input id="mobileNumber" class="form-control" th:field="*{mobileNumber}"
-                   type="text" pattern="[0-9]{10}" title="10-digit number" required />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label" for="dateOfBirth">Date of Birth</label>
-            <input id="dateOfBirth" class="form-control" th:field="*{dateOfBirth}" type="date" required />
-        </div>
-
-        <hr/>
-
-        <h4 class="text-center mb-3">Face Enrollment (Required)</h4>
-        <div id="video-container" class="mb-3">
-            <video id="video" autoplay playsinline style="display: none;"></video>
-        </div>
-        <canvas id="snapshot" style="display:none;"></canvas>
-
-        <div class="text-center mb-3">
-            <button type="button" id="startCaptureBtn" class="btn btn-primary">Start Camera & Capture</button>
-            <div id="enrollmentStatus" class="mt-2 text-muted small">Capture your face template for enrollment.</div>
-        </div>
-
-        <input type="hidden" th:field="*{faceTemplateBase64}" id="faceTemplate" required/>
-
-        <button type="submit" id="registerBtn" class="btn btn-custom w-100" disabled>Finalize Registration</button>
-
-        <div class="text-center mt-3">
-            <span>Already registered? <a th:href="@{/login}">Login here</a></span>
-        </div>
-    </form>
 </div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h5>
+                    <span class="material-icons align-middle" style="font-size: 20px;">cloud_circle</span>
+                    Secure File Sharing
+                </h5>
+                <p style="color: rgba(255,255,255,0.7); font-size: 14px; max-width: 300px;">
+                    Enterprise-grade file sharing with three-factor authentication and end-to-end encryption.
+                </p>
+            </div>
+
+            <div class="footer-section">
+                <h5>Quick Links</h5>
+                <ul>
+                    <li><a href="#" class="footer-link">About Us</a></li>
+                    <li><a href="#" class="footer-link">Features</a></li>
+                    <li><a href="#" class="footer-link">Security</a></li>
+                    <li><a href="#" class="footer-link">Pricing</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h5>Support</h5>
+                <ul>
+                    <li><a href="#" class="footer-link">Help Center</a></li>
+                    <li><a href="#" class="footer-link">Privacy Policy</a></li>
+                    <li><a href="#" class="footer-link">Terms of Service</a></li>
+                    <li><a href="#" class="footer-link">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h5>Connect With Us</h5>
+                <div class="social-icons">
+                    <a href="#" class="social-icon">
+                        <span class="material-icons" style="font-size: 20px;">facebook</span>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <span class="material-icons" style="font-size: 20px;">link</span>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <span class="material-icons" style="font-size: 20px;">email</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>
+                <span class="material-icons align-middle" style="font-size: 16px;">lock</span>
+                &copy; 2025 Secure File Sharing. All rights reserved. | AES-256-GCM + RSA-2048 Encrypted
+            </p>
+        </div>
+    </div>
+</footer>
 
 <script th:inline="javascript">
     const video = document.getElementById('video');
@@ -102,41 +562,39 @@
     const enrollmentStatus = document.getElementById('enrollmentStatus');
     const faceTemplate = document.getElementById('faceTemplate');
     const registrationForm = document.getElementById('registrationForm');
+    const videoContainer = document.getElementById('video-container');
 
     let stream = null;
     let isCaptured = false;
 
-    // 1. Handle Camera Start
+    // Start Camera
     startCaptureBtn.onclick = async () => {
         if (!stream) {
             try {
-                // Get user media (video only)
-                stream = await navigator.mediaDevices.getUserMedia({video: true, audio: false});
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
                 video.srcObject = stream;
-                video.style.display = 'block';
-                startCaptureBtn.innerText = "Capture New Face";
-                enrollmentStatus.innerHTML = "<span class='text-primary'>Camera is ON. Please look at the camera.</span>";
+                videoContainer.style.display = 'block';
+                startCaptureBtn.innerHTML = '<span class="material-icons align-middle">camera</span> Capture Face';
+                enrollmentStatus.innerHTML = '<small class="text-primary">Camera is ON. Look at the camera and click "Capture Face"</small>';
                 registerBtn.disabled = true;
 
-                // Wait for video load before capturing
                 video.onloadedmetadata = () => {
                     setTimeout(captureFace, 500);
                 };
                 if (video.readyState >= 2) {
                     captureFace();
                 }
-
             } catch (e) {
-                enrollmentStatus.innerHTML = "<span class='text-danger'>Error: Camera access denied or not available.</span>";
+                enrollmentStatus.innerHTML = '<small class="text-danger">Camera access denied. Please enable camera permissions.</small>';
                 startCaptureBtn.disabled = true;
                 registerBtn.disabled = true;
             }
         } else {
-            captureFace(); // Recapture on subsequent clicks
+            captureFace();
         }
     };
 
-    // 2. Handle Face Capture and Data Assignment
+    // Capture Face
     const captureFace = () => {
         if (!stream) return;
 
@@ -145,35 +603,31 @@
         const ctx = snapshot.getContext('2d');
         ctx.drawImage(video, 0, 0, snapshot.width, snapshot.height);
 
-        // Get Base64 dataURL
         const dataUrl = snapshot.toDataURL('image/jpeg', 0.9);
-
-        // Assign Base64 data to the hidden form field
         faceTemplate.value = dataUrl;
         isCaptured = true;
 
-        enrollmentStatus.innerHTML = "<span class='text-success'>Face Template Captured Successfully.</span>";
+        enrollmentStatus.innerHTML = '<small class="text-success"><span class="material-icons align-middle" style="font-size: 16px;">check_circle</span> Face captured successfully!</small>';
         registerBtn.disabled = false;
 
-        // Stop the stream after a brief moment to turn off the camera light
+        // Stop camera
         setTimeout(() => {
             stream.getTracks().forEach(track => track.stop());
             stream = null;
-            video.style.display = 'none';
+            videoContainer.style.display = 'none';
         }, 1000);
     };
 
-    // 3. Prevent form submission if face capture hasn't happened
+    // Form validation
     registrationForm.onsubmit = (e) => {
         if (!isCaptured || !faceTemplate.value) {
             e.preventDefault();
-            enrollmentStatus.innerHTML = "<span class='text-danger'>Error: You must capture your face template before registering.</span>";
-            registerBtn.disabled = false; // Re-enable for retry
+            enrollmentStatus.innerHTML = '<small class="text-danger">Please capture your face template before registering.</small>';
+            registerBtn.disabled = false;
         }
-        // If successful, the server side handles the final status
-        // and registration will proceed.
     };
-
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

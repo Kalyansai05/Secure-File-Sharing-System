@@ -36,19 +36,27 @@ public class AuthFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         String requestURI = httpRequest.getRequestURI();
 
-        // 1. ALLOW PUBLIC PATHS (No Authentication Needed)
-        boolean isPublicEndpoint = pathMatcher.match("/registration/**", requestURI) ||
+        // ✅ UPDATED: Add home page and static resources to public endpoints
+        boolean isPublicEndpoint = pathMatcher.match("/", requestURI) ||
+                pathMatcher.match("/home", requestURI) ||
+                pathMatcher.match("/registration/**", requestURI) ||
                 pathMatcher.match("/login", requestURI) ||
                 pathMatcher.match("/login/**", requestURI) ||
                 pathMatcher.match("/logout", requestURI) ||
-                pathMatcher.match("/otp-verify", requestURI) ||      // ✅ ADDED
-                pathMatcher.match("/verify-otp", requestURI);        // ✅ ADDED
+                pathMatcher.match("/otp-verify", requestURI) ||
+                pathMatcher.match("/verify-otp", requestURI) ||
+                pathMatcher.match("/share/download/**", requestURI) ||
+                pathMatcher.match("/css/**", requestURI) ||
+                pathMatcher.match("/js/**", requestURI) ||
+                pathMatcher.match("/images/**", requestURI) ||
+                pathMatcher.match("/favicon.ico", requestURI);
 
         if (isPublicEndpoint) {
             chain.doFilter(request, response);
             return;
         }
 
+        // ✅ PRESERVED: All original authentication and status checking logic
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Object principal = securityContext.getAuthentication();
 

@@ -2,74 +2,280 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>OTP Verification</title>
-    <!-- Bootstrap 5 CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification - Secure File Sharing</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <style>
-        .navbar {
-            background-color: cadetblue;
+        :root {
+            --primary: #1976D2;
+            --primary-dark: #1565C0;
+            --surface: #FFFFFF;
+            --error: #E53935;
+            --success: #43A047;
+            --shadow-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
         }
+
+        * {
+            font-family: 'Roboto', sans-serif;
+        }
+
         body {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #42A5F5 0%, #1976D2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
+
+        /* Header */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #0D47A1 100%);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+            padding: 16px 0;
+        }
+
+        .navbar-brand {
+            font-weight: 500;
+            font-size: 22px;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand .material-icons {
+            font-size: 32px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .otp-container {
+            max-width: 500px;
+            width: 100%;
+        }
+
         .card {
-            margin-top: 100px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             border: none;
-            border-radius: 10px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-3);
+        }
+
+        .card-header {
+            background: var(--surface);
+            padding: 32px 32px 24px;
+            text-align: center;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .icon-circle {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, var(--primary) 0%, #1565C0 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .icon-circle .material-icons {
+            color: white;
+            font-size: 40px;
+        }
+
+        .card-header h3 {
+            font-weight: 500;
+            color: #212121;
+            margin: 0 0 8px;
+            font-size: 24px;
+        }
+
+        .card-body {
+            padding: 32px;
+            background: var(--surface);
+        }
+
+        .form-control {
+            border: 2px solid #BDBDBD;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 32px;
+            text-align: center;
+            letter-spacing: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.1);
+            outline: none;
+        }
+
+        .btn-material {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 24px;
+            font-weight: 500;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+        }
+
+        .btn-material:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.19);
+            transform: translateY(-2px);
+        }
+
+        .alert-material {
+            border: none;
+            border-radius: 8px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: start;
+            gap: 12px;
+        }
+
+        .text-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .text-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #0D47A1 100%);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .footer p {
+            margin: 0;
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
         }
     </style>
 </head>
 <body>
-
-<!-- Navbar -->
-<nav class="navbar navbar-dark fixed-top">
+<!-- Header Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <h1 class="text-white fs-3">Two Step Verification Module</h1>
+        <a class="navbar-brand" href="#">
+            <span class="material-icons">cloud_circle</span>
+            Secure File Sharing
+        </a>
     </div>
 </nav>
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
+<!-- Main Content -->
+<div class="main-content">
+    <div class="otp-container">
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-circle">
+                    <span class="material-icons">verified_user</span>
+                </div>
+                <h3>Verify Your Identity</h3>
+                <p class="text-muted mb-0">Enter the OTP sent to your email</p>
+            </div>
 
-            <div class="card p-4">
-                <h2 class="text-center mb-4">OTP Verification</h2>
-
+            <div class="card-body">
                 <!-- Error Alert -->
-                <div th:if="${error}" class="alert alert-danger text-center" th:text="${error}">
-                    Error message will appear here
+                <div th:if="${error}" class="alert alert-danger alert-material mb-4">
+                    <span class="material-icons">error</span>
+                    <div>
+                        <strong>Verification Failed</strong>
+                        <p class="mb-0" th:text="${error}">Invalid OTP</p>
+                    </div>
                 </div>
 
-                <!-- Success message if email is in model -->
-                <p th:if="${email}" class="text-center text-muted">
-                    OTP has been sent to <strong th:text="${email}"></strong>
-                </p>
+                <!-- Email Info -->
+                <div th:if="${email}" class="alert alert-info alert-material mb-4">
+                    <span class="material-icons">mail</span>
+                    <div>
+                        <small>OTP sent to <strong th:text="${email}">email@example.com</strong></small>
+                    </div>
+                </div>
 
-                <!-- OTP Form -->
-                <!-- ✅ FIXED: Changed action to /verify-otp -->
+                <!-- ✅ PRESERVED: Original form action and field binding -->
                 <form th:action="@{/verify-otp}" method="post" th:object="${otpValue}">
-                    <div class="mb-3">
-                        <label for="otp" class="form-label">Enter OTP</label>
-                        <!-- ✅ FIXED: th:field now matches the OtpForm.otp property -->
-                        <input id="otp" type="text" class="form-control" th:field="*{otp}" required autofocus>
+
+                    <div class="mb-4">
+                        <label class="form-label text-center w-100 mb-3">Enter 4-Digit Code</label>
+                        <!-- ✅ FIXED: Changed maxlength from 6 to 4 and pattern to [0-9]{4} -->
+                        <!-- ✅ PRESERVED: th:field="*{otp}" - matches OtpForm.otp -->
+                        <input id="otp"
+                               type="text"
+                               class="form-control"
+                               th:field="*{otp}"
+                               required
+                               autofocus
+                               maxlength="4"
+                               pattern="[0-9]{4}"
+                               inputmode="numeric"
+                               placeholder="0000">
                     </div>
 
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </div>
+                    <button type="submit" class="btn btn-material w-100">
+                        <span class="material-icons align-middle" style="font-size: 20px;">check_circle</span>
+                        Verify OTP
+                    </button>
 
-                    <div class="text-center mt-3">
-                        <span>Back to <a th:href="@{/login}">Login</a></span>
+                    <div class="text-center mt-4">
+                        <a th:href="@{/login}" class="text-link">
+                            <span class="material-icons align-middle" style="font-size: 16px;">arrow_back</span>
+                            Back to Sign In
+                        </a>
                     </div>
                 </form>
             </div>
-
         </div>
     </div>
 </div>
 
-<!-- Bootstrap 5 JS -->
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p>
+            <span class="material-icons align-middle" style="font-size: 16px;">lock</span>
+            &copy; 2025 Secure File Sharing. All rights reserved. | Three-Factor Authentication
+        </p>
+    </div>
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Auto-format OTP input
+    const otpInput = document.getElementById('otp');
+    otpInput.addEventListener('input', function(e) {
+        // Remove non-numeric characters
+        this.value = this.value.replace(/[^0-9]/g, '');
+        // Limit to 4 digits
+        if (this.value.length > 4) {
+            this.value = this.value.slice(0, 4);
+        }
+    });
+</script>
 </body>
 </html>

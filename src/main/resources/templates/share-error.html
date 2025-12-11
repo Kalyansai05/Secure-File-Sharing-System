@@ -2,48 +2,377 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Share Access Error</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Denied - Secure File Sharing</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1976D2;
+            --primary-dark: #1565C0;
+            --surface: #FFFFFF;
+            --error: #E53935;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --shadow-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+        }
+
+        * {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #EF5350 0%, #E53935 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .navbar {
+            background: linear-gradient(135deg, #C62828 0%, #B71C1C 100%);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+            padding: 16px 0;
+        }
+
+        .navbar-brand {
+            font-weight: 500;
+            font-size: 22px;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand .material-icons {
+            font-size: 32px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .error-container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--shadow-3);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--surface);
+            padding: 40px 32px;
+            text-align: center;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .icon-circle {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #EF5350 0%, #E53935 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .icon-circle .material-icons {
+            color: white;
+            font-size: 60px;
+        }
+
+        .card-header h3 {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .card-body {
+            padding: 32px;
+            background: var(--surface);
+        }
+
+        .error-message {
+            background: #FFEBEE;
+            border-left: 4px solid var(--error);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .error-message p {
+            margin: 0;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .possible-reasons {
+            background: #F5F5F5;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .possible-reasons h5 {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .possible-reasons ul {
+            margin: 0;
+            padding-left: 24px;
+        }
+
+        .possible-reasons li {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .btn-material {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 24px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-material:hover {
+            background: #1565C0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.19);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 2px solid #BDBDBD;
+        }
+
+        .btn-outline:hover {
+            background: #F5F5F5;
+            border-color: #9E9E9E;
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #C62828 0%, #B71C1C 100%);
+            color: white;
+            padding: 30px 0 20px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .footer-section h5 {
+            font-weight: 500;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 8px;
+        }
+
+        .footer-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 20px;
+            text-align: center;
+        }
+
+        .footer-bottom p {
+            margin: 0;
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+        }
+    </style>
 </head>
 <body>
+<!-- Header Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <span class="material-icons">cloud_circle</span>
+            Secure File Sharing
+        </a>
+    </div>
+</nav>
 
-<div class="container" style="margin-top: 80px;">
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <div class="panel panel-danger">
-                <div class="panel-heading">
-                    <h3 class="panel-title">❌ Access Denied</h3>
+<!-- Main Content -->
+<div class="main-content">
+    <div class="error-container">
+        <div class="card">
+            <div class="card-header">
+                <div class="icon-circle">
+                    <span class="material-icons">block</span>
                 </div>
-                <div class="panel-body">
-                    <div class="alert alert-danger">
-                        <strong>Error:</strong>
-                        <p th:text="${error}"></p>
-                    </div>
+                <h3>Access Denied</h3>
+                <p class="text-muted mb-0">Unable to access this shared file</p>
+            </div>
 
-                    <p><strong>Possible reasons:</strong></p>
+            <div class="card-body">
+                <!-- Error Message -->
+                <div class="error-message">
+                    <p>
+                        <strong>
+                            <span class="material-icons align-middle" style="font-size: 20px;">error_outline</span>
+                            Error:
+                        </strong>
+                        <span th:text="${error}">The share link has expired or been revoked.</span>
+                    </p>
+                </div>
+
+                <!-- Possible Reasons -->
+                <div class="possible-reasons">
+                    <h5>
+                        <span class="material-icons">help_outline</span>
+                        Possible Reasons
+                    </h5>
                     <ul>
                         <li>The share link has expired</li>
                         <li>The share has been revoked by the owner</li>
-                        <li>Download limit reached</li>
+                        <li>Maximum download limit has been reached</li>
                         <li>You are not the intended recipient</li>
-                        <li>Invalid or corrupted JWT token</li>
+                        <li>The file has been deleted</li>
+                        <li>Invalid or corrupted share token</li>
                     </ul>
+                </div>
 
-                    <hr>
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2">
+                    <!-- ✅ PRESERVED: Navigation links to /login and /dashboard -->
+                    <a th:href="@{/login}" class="btn btn-material">
+                        <span class="material-icons">login</span>
+                        Go to Sign In
+                    </a>
 
-                    <p class="text-center">
-                        <a th:href="@{/login}" class="btn btn-primary">
-                            <span class="glyphicon glyphicon-log-in"></span> Login
-                        </a>
-                        <a th:href="@{/dashboard}" class="btn btn-default">
-                            <span class="glyphicon glyphicon-home"></span> Dashboard
-                        </a>
-                    </p>
+                    <a th:href="@{/dashboard}" class="btn btn-outline">
+                        <span class="material-icons">dashboard</span>
+                        Go to Dashboard
+                    </a>
+                </div>
+
+                <hr style="margin: 24px 0; border-color: #E0E0E0;">
+
+                <div class="text-center">
+                    <small class="text-muted">
+                        <span class="material-icons align-middle" style="font-size: 16px;">contact_support</span>
+                        Need help? Contact the file owner or system administrator.
+                    </small>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h5>
+                    <span class="material-icons align-middle" style="font-size: 20px;">cloud_circle</span>
+                    Secure File Sharing
+                </h5>
+                <p style="color: rgba(255,255,255,0.7); font-size: 14px; max-width: 300px;">
+                    Enterprise-grade file sharing with three-factor authentication and end-to-end encryption.
+                </p>
+            </div>
+
+            <div class="footer-section">
+                <h5>Quick Links</h5>
+                <ul>
+                    <li><a href="#" class="footer-link">About Us</a></li>
+                    <li><a href="#" class="footer-link">Features</a></li>
+                    <li><a href="#" class="footer-link">Security</a></li>
+                    <li><a href="#" class="footer-link">Pricing</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h5>Support</h5>
+                <ul>
+                    <li><a href="#" class="footer-link">Help Center</a></li>
+                    <li><a href="#" class="footer-link">Privacy Policy</a></li>
+                    <li><a href="#" class="footer-link">Terms of Service</a></li>
+                    <li><a href="#" class="footer-link">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h5>Need Assistance?</h5>
+                <ul>
+                    <li class="footer-link">📧 support@securefiles.com</li>
+                    <li class="footer-link">📞 +1 (800) 123-4567</li>
+                    <li class="footer-link">💬 Live Chat Available</li>
+                    <li class="footer-link">🕒 24/7 Support</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>
+                <span class="material-icons align-middle" style="font-size: 16px;">lock</span>
+                &copy; 2025 Secure File Sharing. All rights reserved. | End-to-End Encrypted
+            </p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
